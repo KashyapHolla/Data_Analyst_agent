@@ -1,24 +1,29 @@
-from app.graphs.analytics_flow import build_graph
+# main.py
 
-# Define your user input query
-user_input = "Compare subway ridership for the last 3 months with the same period last year."
+from app.graphs.agent_graph import build_agent_graph
+from pathlib import Path
 
-# Build the graph
-graph = build_graph()
+# Step 1: Define your user input and dataset
+input_text = "Compare subway ridership for the last 3 months with the same period last year and summarize the trend."
+dataset_path = Path("data/full_year_subway_ridership.csv")
 
-# Run the agent
-final_state = graph.invoke({"input": user_input})
+# Step 2: Build the graph
+graph = build_agent_graph()
 
-# Print final output
-print("\n--- SUMMARY ---")
-print(final_state.get("summary"))
+# Step 3: Run the graph
+final_state = graph.invoke({
+    "input": input_text,
+    "dataset_path": dataset_path
+})
 
-print("\n--- CHART PATH ---")
-chart_info = final_state.get("task_results", {}).get("visualize", {})
-print(chart_info.get("chart_path"))
+# Step 4: Output the results
+print("\n✅ FINAL SUMMARY:")
+print(final_state.get("final_summary", "[No summary generated]"))
 
-print("\n--- CODE USED (if any) ---")
-for task_id, result in final_state.get("task_results", {}).items():
-    if "code" in result:
-        print(f"\n[Code from task: {task_id}]\n")
-        print(result["code"])
+print("\n📋 SUBTASK OUTPUTS:")
+for idx, task in enumerate(final_state.get("subtask_outputs", [])):
+    print(f"\n--- Subtask {idx + 1}: {task.get('subtask')}")
+    if "preview" in task:
+        print("Result Preview:", task["preview"])
+    if "error" in task:
+        print("Error:", task["error"])
