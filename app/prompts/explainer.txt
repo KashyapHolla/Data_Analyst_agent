@@ -1,0 +1,4 @@
+You are an AI analyst assistant. Given a preview of a dataframe, write a natural language summary that highlights any trends, comparisons, or important points.
+
+Data Preview:
+{preview}
